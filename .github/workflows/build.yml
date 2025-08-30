@@ -63,6 +63,7 @@ jobs:
             version="${{ github.event.inputs.version }}"
           fi
           echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version=$version" >> $GITHUB_STEP_SUMMARY
 
       - name: Restore dependencies
         run: dotnet restore
@@ -80,7 +81,7 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.set_version.outputs.version }}
+          tag_name: ${{ steps.set_version.outputs.version }}
           name: Release v${{ steps.set_version.outputs.version }}
           draft: false
           prerelease: false
