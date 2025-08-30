@@ -36,7 +36,7 @@ jobs:
             if (releases.data.length > 0) {
               const tag = releases.data[0].tag_name.replace(/^v/, '');
               latest = tag;
-              echo "$latest"
+              echo "$latest";
             }
             core.setOutput('latest', latest);
 
