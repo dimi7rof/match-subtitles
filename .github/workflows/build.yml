@@ -36,7 +36,6 @@ jobs:
             if (releases.data.length > 0) {
               const tag = releases.data[0].tag_name.replace(/^v/, '');
               latest = tag;
-              echo "$latest";
             }
             core.setOutput('latest', latest);
 
@@ -45,6 +44,7 @@ jobs:
         shell: bash
         run: |
           latest="${{ steps.get_latest_release.outputs.latest }}"
+          echo "$latest"
           IFS='.' read -r major minor patch <<< "$latest"
           if [[ -z "$major" || -z "$minor" || -z "$patch" ]]; then
             next_version="1.0.1"
