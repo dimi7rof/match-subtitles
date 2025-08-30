@@ -82,7 +82,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.set_version.outputs.version }}
-          name: Release v${{ steps.set_version.outputs.version }}
+          name: Release ${{ steps.set_version.outputs.version }}
           draft: false
           prerelease: false
         env:
@@ -91,7 +91,7 @@ jobs:
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.set_version.outputs.version }}
-          files: app.zip
+          tag_name: ${{ steps.set_version.outputs.version }}
+          files: match-subtitles.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
