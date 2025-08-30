@@ -36,6 +36,7 @@ jobs:
             if (releases.data.length > 0) {
               const tag = releases.data[0].tag_name.replace(/^v/, '');
               latest = tag;
+              echo "$latest"
             }
             core.setOutput('latest', latest);
 
@@ -47,11 +48,15 @@ jobs:
           IFS='.' read -r major minor patch <<< "$latest"
           if [[ -z "$major" || -z "$minor" || -z "$patch" ]]; then
             next_version="1.0.1"
+          echo "$next_version"
           else
+            echo "$patch"
             patch=$((patch + 1))
+            echo "$patch"
             next_version="$major.$minor.$patch"
           fi
           echo "next_version=$next_version" >> $GITHUB_OUTPUT
+          echo "$next_version"
 
       - name: Set release version
         id: set_version
@@ -63,7 +68,7 @@ jobs:
             version="${{ github.event.inputs.version }}"
           fi
           echo "version=$version" >> $GITHUB_OUTPUT
-          echo "version=$version" >> $GITHUB_STEP_SUMMARY
+          echo "Version = $version" >> $GITHUB_STEP_SUMMARY
 
       - name: Restore dependencies
         run: dotnet restore
@@ -75,7 +80,7 @@ jobs:
         run: dotnet publish -c Release -r win-x64 --self-contained true -o publish
 
       - name: Archive published app
-        run: Compress-Archive -Path publish\* -DestinationPath app.zip
+        run: Compress-Archive -Path publish\* -DestinationPath match-subtitles.zip
 
       - name: Create Release
         id: create_release
