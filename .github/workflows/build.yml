@@ -55,19 +55,8 @@ jobs:
             echo "$patch"
             next_version="$major.$minor.$patch"
           fi
-          echo "next_version=$next_version" >> $GITHUB_OUTPUT
-          echo "$next_version"
-
-      - name: Set release version
-        id: set_version
-        shell: bash
-        run: |
-          if [[ "${{ github.event.inputs.version }}" == "" ]]; then
-            version="${{ steps.next_version.outputs.next_version }}"
-          else
-            version="${{ github.event.inputs.version }}"
-          fi
-          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "version=$next_version" >> $GITHUB_OUTPUT
+          echo "$version"
           echo "Version = $version" >> $GITHUB_STEP_SUMMARY
 
       - name: Restore dependencies
