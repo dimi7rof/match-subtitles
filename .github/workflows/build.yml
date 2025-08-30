@@ -41,6 +41,7 @@ jobs:
 
       - name: Calculate next patch version
         id: next_version
+        shell: bash
         run: |
           latest="${{ steps.get_latest_release.outputs.latest }}"
           IFS='.' read -r major minor patch <<< "$latest"
