@@ -30,7 +30,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore ${{ github.event.inputs.profect }}}
+        run: dotnet restore ${{ github.event.inputs.profect }}
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
