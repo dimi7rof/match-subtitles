@@ -32,10 +32,9 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: dimi7rof/create-release@v3
+        uses: dimi7rof/create-release@v5
         with:
           name: Release ${{ github.ref_name }}
           version: ${{ github.ref_name }}
-          Team_webhook: ''
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: "match-subtitles.zip"
