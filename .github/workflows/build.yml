@@ -10,6 +10,11 @@ on:
         description: 'Tag to create and release (e.g. 1.0.0)'
         required: true
         type: string
+      profect:
+        description: 'Project to build (e.g. SubtiteRenamer.csproj)'
+        required: false
+        type: string
+        default: 'SubtiteRenamer.csproj'
 
 jobs:
   build:
@@ -25,7 +30,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ${{ github.event.inputs.profect }}}
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
