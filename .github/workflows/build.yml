@@ -32,7 +32,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: dimi7rof/create-release@v6
+        uses: dimi7rof/create-release@v3
         with:
           name: Release ${{ github.ref_name }}
           version: ${{ github.ref_name }}
