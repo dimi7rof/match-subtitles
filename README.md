@@ -13,7 +13,7 @@ Small console utility to prepare TV episode folders for watching by matching and
 ## Supported file types
 
 - Video extensions: `.mkv`, `.mp4`, `.avi`, `.mov` (can be modified in `Program.cs`).
-- Subtitle extension: `.srt`.
+- Subtitle extensions: `.srt`, `.ass`, `.vtt` (the app now supports multiple subtitle extensions).
 
 ## Matching logic
 
@@ -58,11 +58,19 @@ Provide the full path to the folder containing your show (it will scan subfolder
 
 ## Where to change behavior
 
-- `Program.cs` contains the list of video extensions, subtitle extension and the episode regex near the top. Modify those arrays/values to support additional formats or extensions.
+- `Program.cs` contains the list of video extensions, subtitle extensions and the episode regex near the top. Modify those arrays/values to support additional formats or extensions.
+- The runtime prompts and dry-run/confirmation behavior are implemented inline in `Program.cs` and can be adjusted if you prefer command-line switches.
 
-## Suggested improvements
+## Implemented improvements
 
-- Add a dry-run mode to preview changes without modifying files.
-- Add logging and a confirmation prompt before deleting folders/files.
-- Support more subtitle extensions (.ass, .vtt) and multiple naming schemes.
-- Better duplicate-handling when multiple subtitles match a single video.
+- Dry-run mode to preview changes without modifying files.
+- Logging of actions and errors to `match-subtitles.log` in the processed folder.
+- Confirmation prompts before deleting subfolders and unrelated files.
+- Support for multiple subtitle extensions (`.srt`, `.ass`, `.vtt`).
+- Improved duplicate handling when multiple subtitles match a single video: prefers exact base-name match, prefers `.srt`, and falls back to filename similarity (Levenshtein) when needed.
+
+## Suggested improvements (remaining)
+
+- Add a command-line interface to avoid interactive prompts for automation.
+- Add unit tests and more robust parsing for non-standard episode naming schemes.
+- Optionally preserve backups when renaming/moving files instead of overwriting.
