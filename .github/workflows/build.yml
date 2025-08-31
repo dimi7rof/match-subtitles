@@ -41,6 +41,11 @@ jobs:
       - name: Archive published app
         run: Compress-Archive -Path publish\* -DestinationPath SubtitleRenamerWpf.zip
 
+      - name: Copy EXE for release
+        run: |
+          $exe = Get-ChildItem -Path publish -Filter *.exe | Select-Object -First 1
+          if ($exe) { Copy-Item $exe.FullName -Destination SubtitleRenamerWpf.exe }
+
       - name: Push tag (if workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
         shell: bash
@@ -70,4 +75,4 @@ jobs:
           name: Release ${{ steps.set_tag.outputs.tag }}
           version: ${{ steps.set_tag.outputs.tag }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          files: "SubtitleRenamerWpf.zip"
+          files: "SubtitleRenamerWpf.zip,SubtitleRenamerWpf.exe"
