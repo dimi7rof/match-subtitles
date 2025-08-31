@@ -1,76 +1,29 @@
-# match-subtitles (SubtiteRenamer)
+# This app is 100% created by AI
 
-Small console utility to prepare TV episode folders for watching by matching and renaming .srt subtitle files to corresponding video files and cleaning up folders.
+# SubtitleRenamerWpf
 
-## What it does
+A Windows desktop (WPF) application for matching, renaming, and cleaning up TV episode video and subtitle files in a folder. Provides a graphical interface for selecting a folder, running the process, and viewing logs/results.
 
-- Moves video files from subfolders into the specified top folder.
-- Searches for subtitle files (`.srt`) and tries to match them to videos using an episode pattern (SxxExx).
-- Renames matching subtitle files so they have the exact same name as the video (only extension differs).
-- Deletes all subfolders under the top folder after processing.
-- Removes unrelated files from the top folder (keeps videos and their `.srt` pairs).
+## Features
 
-## Supported file types
+- Select a folder containing TV episodes and subtitles
+- Moves video files from subfolders to the top folder
+- Matches and renames subtitles to match video files (supports .srt, .ass, .vtt)
+- Deletes unrelated files and empty subfolders
+- Shows a log of all actions and errors
 
-- Video extensions: `.mkv`, `.mp4`, `.avi`, `.mov` (can be modified in `Program.cs`).
-- Subtitle extensions: `.srt`, `.ass`, `.vtt` (the app now supports multiple subtitle extensions).
+## Usage
 
-## Matching logic
+1. Launch the app.
+2. Select the folder to process.
+3. Click the button to start matching/renaming.
+4. Review the log output in the app.
 
-The app extracts season and episode from filenames using this regex (case-insensitive):
+## Build
 
-```
-S(\d{2})[ ._-]*E(\d{2})
-```
+- Requires .NET 7+ SDK
+- Build with `dotnet build` or open the project in Visual Studio/VS Code
 
-Examples matched: `S01E05`, `S01.E05`, `S01_E05`, `S01 - E05`, etc.
+## Migration
 
-If a subtitle contains the same season/episode numbers, it is considered a match and will be moved/renamed to match the video filename.
-
-## Caveats / Warnings
-
-- The program will move and delete files. Make a backup or test on a disposable folder first.
-- Only `.srt` subtitles are handled by default.
-- If multiple subtitle files match a single video, the app picks the first unused one it finds.
-- Files are overwritten if names collide (uses File.Move with overwrite behavior in .NET 6+). Adjust code if you need a different behavior.
-
-## Build & Run
-
-Requires .NET 7+ / .NET SDK compatible with the project target (project currently targets .NET 9 in the repo build outputs).
-
-From PowerShell in the repo root:
-
-- Build:
-  dotnet build -c Release
-
-- Run directly with the SDK (interactive):
-  dotnet run --project .\SubtiteRenamer.csproj
-
-- Or run the published executable after publishing for your platform, for example (replace runtime identifier as needed):
-  dotnet publish -c Release -r win-x64 --self-contained false -o .\publish
-  .\publish\SubtiteRenamer.exe
-
-When running the app it prompts:
-
-- Enter folder path (or type 'exit' to quit):
-
-Provide the full path to the folder containing your show (it will scan subfolders).
-
-## Where to change behavior
-
-- `Program.cs` contains the list of video extensions, subtitle extensions and the episode regex near the top. Modify those arrays/values to support additional formats or extensions.
-- The runtime prompts and dry-run/confirmation behavior are implemented inline in `Program.cs` and can be adjusted if you prefer command-line switches.
-
-## Implemented improvements
-
-- Dry-run mode to preview changes without modifying files.
-- Logging of actions and errors to `match-subtitles.log` in the processed folder.
-- Confirmation prompts before deleting subfolders and unrelated files.
-- Support for multiple subtitle extensions (`.srt`, `.ass`, `.vtt`).
-- Improved duplicate handling when multiple subtitles match a single video: prefers exact base-name match, prefers `.srt`, and falls back to filename similarity (Levenshtein) when needed.
-
-## Suggested improvements (remaining)
-
-- Add a command-line interface to avoid interactive prompts for automation.
-- Add unit tests and more robust parsing for non-standard episode naming schemes.
-- Optionally preserve backups when renaming/moving files instead of overwriting.
+This app is a WPF port of the original console-based SubtitleRenamer. All logic is now accessible via a graphical interface.

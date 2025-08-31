@@ -1,0 +1,38 @@
+﻿<Window x:Class="SubtitleRenamerWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SubtitleRenamerWpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Folder selection -->
+        <TextBox x:Name="FolderPathTextBox" Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" Height="28" VerticalAlignment="Center"/>
+        <Button Content="Browse..." Grid.Row="0" Grid.Column="1" Width="90" Height="28" Margin="0,0,0,8" Click="BrowseButton_Click"/>
+
+        <!-- Options -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,8">
+            <CheckBox x:Name="DeleteSubfoldersCheckBox" Content="Delete subfolders" IsChecked="True" Margin="0,0,16,0"/>
+            <CheckBox x:Name="DeleteUnrelatedFilesCheckBox" Content="Delete unrelated files" IsChecked="True" Margin="0,0,16,0"/>
+            <CheckBox x:Name="ConfirmBeforeDeleteCheckBox" Content="Confirm before deleting" IsChecked="True"/>
+        </StackPanel>
+
+        <!-- Start button -->
+        <Button x:Name="StartButton" Content="Start" Grid.Row="2" Grid.Column="0" Width="120" Height="32" Click="StartButton_Click"/>
+
+        <!-- Log output -->
+        <TextBox x:Name="LogTextBox" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" Height="240" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" IsReadOnly="True" TextWrapping="Wrap"/>
+    </Grid>
+</Window>

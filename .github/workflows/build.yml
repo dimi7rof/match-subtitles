@@ -7,14 +7,14 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to create and release (e.g. 1.0.0)'
+        description: "Tag to create and release (e.g. 1.0.0)"
         required: true
         type: string
-      profect:
-        description: 'Project to build (e.g. SubtiteRenamer.csproj)'
+      project:
+        description: "Project to build (e.g. SubtitleRenamerWpf.csproj)"
         required: false
         type: string
-        default: 'SubtiteRenamer.csproj'
+        default: "SubtitleRenamerWpf.csproj"
 
 jobs:
   build:
@@ -27,10 +27,10 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: "9.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore ${{ github.event.inputs.profect }}
+        run: dotnet restore ${{ github.event.inputs.project }}
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
@@ -39,7 +39,7 @@ jobs:
         run: dotnet publish -c Release -r win-x64 --self-contained true -o publish
 
       - name: Archive published app
-        run: Compress-Archive -Path publish\* -DestinationPath match-subtitles.zip
+        run: Compress-Archive -Path publish\* -DestinationPath SubtitleRenamerWpf.zip
 
       - name: Push tag (if workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
@@ -70,4 +70,4 @@ jobs:
           name: Release ${{ steps.set_tag.outputs.tag }}
           version: ${{ steps.set_tag.outputs.tag }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          files: "match-subtitles.zip"
+          files: "SubtitleRenamerWpf.zip"
