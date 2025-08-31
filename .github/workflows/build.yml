@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - "*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to create and release (e.g. 1.0.0)'
+        required: true
+        type: string
 
 jobs:
   build:
@@ -30,11 +36,33 @@ jobs:
       - name: Archive published app
         run: Compress-Archive -Path publish\* -DestinationPath match-subtitles.zip
 
+      - name: Push tag (if workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ github.event.inputs.tag }}
+          git push origin ${{ github.event.inputs.tag }}
+
+      - name: Set release tag
+        id: set_tag
+        shell: bash
+        run: |
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
       - name: Create Release
         id: create_release
         uses: dimi7rof/create-release@v3
         with:
-          name: Release ${{ github.ref_name }}
-          version: ${{ github.ref_name }}
+          name: Release ${{ steps.set_tag.outputs.tag }}
+          version: ${{ steps.set_tag.outputs.tag }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           files: "match-subtitles.zip"
