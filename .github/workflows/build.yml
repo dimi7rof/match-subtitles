@@ -32,12 +32,10 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v2
+        uses: dimi7rof/create-release@v3
         with:
-          tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          files: match-subtitles.zip
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ github.ref_name }}
+          Team_webhook: ''
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          files: "match-subtitles.zip"
