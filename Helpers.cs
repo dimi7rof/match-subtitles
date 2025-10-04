@@ -1,4 +1,4 @@
-using System;
+namespace SubRename;
 
 public static class Helpers
 {
