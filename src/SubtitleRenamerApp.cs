@@ -37,7 +37,7 @@ public static class SubtitleRenamerApp
             }
             catch (Exception ex)
             {
-                Log($"Failed to extract archive: {archivePath} â€” {ex.Message}");
+                Log($"Failed to extract archive: {archivePath} — {ex.Message}");
             }
         }
 
@@ -60,7 +60,7 @@ public static class SubtitleRenamerApp
                 }
                 catch (Exception ex)
                 {
-                    Log($"Failed to move video: {video} â€” {ex.Message}");
+                    Log($"Failed to move video: {video} — {ex.Message}");
                 }
             }
             else
@@ -136,7 +136,7 @@ public static class SubtitleRenamerApp
                     }
                     catch (Exception ex)
                     {
-                        Log($"Failed to move subtitle: {chosen} â€” {ex.Message}");
+                        Log($"Failed to move subtitle: {chosen} — {ex.Message}");
                     }
                 }
             }
@@ -160,7 +160,7 @@ public static class SubtitleRenamerApp
                         }
                         catch (Exception ex)
                         {
-                            Log($"Failed to delete folder {dir} â€” {ex.Message}");
+                            Log($"Failed to delete folder {dir} — {ex.Message}");
                         }
                     }
                     else
@@ -180,7 +180,7 @@ public static class SubtitleRenamerApp
                     }
                     catch (Exception ex)
                     {
-                        Log($"Failed to delete folder {dir} â€” {ex.Message}");
+                        Log($"Failed to delete folder {dir} — {ex.Message}");
                     }
                 }
             }
@@ -226,7 +226,7 @@ public static class SubtitleRenamerApp
                     }
                     catch (Exception ex)
                     {
-                        Log($"Failed to delete file: {file} â€” {ex.Message}");
+                        Log($"Failed to delete file: {file} — {ex.Message}");
                     }
                 }
             }

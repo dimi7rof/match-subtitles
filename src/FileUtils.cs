@@ -27,7 +27,7 @@ public static class FileUtils
         }
         catch (Exception ex)
         {
-            Helpers.WriteRed($"Failed to move {itemDescription}: {source} â€” {ex.Message}");
+            Helpers.WriteRed($"Failed to move {itemDescription}: {source} — {ex.Message}");
             File.AppendAllText(logPath, $"[{DateTime.Now}] ERROR moving {itemDescription}: {source} -> {dest} : {ex.Message}{Environment.NewLine}");
         }
     }
