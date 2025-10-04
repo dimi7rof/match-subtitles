@@ -42,8 +42,7 @@ public partial class MainWindow : Window
         StartButton.IsEnabled = false;
         LogTextBox.Clear();
 
-        bool deleteSubfolders = DeleteSubfoldersCheckBox.IsChecked == true;
-        bool deleteUnrelated = DeleteUnrelatedFilesCheckBox.IsChecked == true;
+        bool doCleanup = DeleteCleanupCheckBox.IsChecked == true;
         bool confirmDeletes = ConfirmBeforeDeleteCheckBox.IsChecked == true;
 
         // Run the logic in a background task to keep UI responsive
@@ -51,8 +50,7 @@ public partial class MainWindow : Window
         {
             SubtitleRenamerApp.RunWithOptions(
                 folder,
-                deleteSubfolders,
-                deleteUnrelated,
+                doCleanup,
                 confirmDeletes,
                 msg => Dispatcher.Invoke(() => AppendLog(msg)),
                 confirmDeletes ? ConfirmDelete : null

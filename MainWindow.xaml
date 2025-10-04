@@ -24,9 +24,8 @@
 
         <!-- Options -->
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,8">
-            <CheckBox x:Name="DeleteSubfoldersCheckBox" Content="Delete subfolders" IsChecked="True" Margin="0,0,16,0"/>
-            <CheckBox x:Name="DeleteUnrelatedFilesCheckBox" Content="Delete unrelated files" IsChecked="True" Margin="0,0,16,0"/>
-            <CheckBox x:Name="ConfirmBeforeDeleteCheckBox" Content="Confirm before deleting" IsChecked="True"/>
+            <CheckBox x:Name="DeleteCleanupCheckBox" Content="Delete subfolders and unrelated files" IsChecked="True" Margin="0,0,16,0" FontSize="15"/>
+            <CheckBox x:Name="ConfirmBeforeDeleteCheckBox" Content="Confirm before deleting" IsChecked="True" FontSize="15"/>
         </StackPanel>
 
         <!-- Start button -->

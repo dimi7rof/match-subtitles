@@ -7,7 +7,7 @@ namespace SubRename;
 
 public static class SubtitleRenamerApp
 {
-    public static void RunWithOptions(string topFolder, bool deleteSubfolders, bool deleteUnrelated, bool confirmDeletes, Action<string> log, Func<string, string, bool>? confirmDelete = null)
+    public static void RunWithOptions(string topFolder, bool cleanup, bool confirmDeletes, Action<string> log, Func<string, string, bool>? confirmDelete = null)
     {
         var videoExtensions = new[] { ".mkv", ".mp4", ".avi", ".mov" };
         var subtitleExtensions = new[] { ".srt", ".ass", ".vtt" };
@@ -144,7 +144,7 @@ public static class SubtitleRenamerApp
 
         // 4. Delete subfolders
         var subDirs = Directory.GetDirectories(topFolder);
-        if (subDirs.Length > 0 && deleteSubfolders)
+        if (subDirs.Length > 0 && cleanup)
         {
             bool doDeleteSubfolders = true;
             if (confirmDeletes && confirmDelete != null)
@@ -204,7 +204,7 @@ public static class SubtitleRenamerApp
         }
 
         var allowedFiles = finalVideoFiles.Union(finalSubtitleFiles);
-        if (deleteUnrelated)
+        if (cleanup)
         {
             var filesToDelete = Directory.GetFiles(topFolder)
                 .Where(f => !allowedFiles.Contains(f))
