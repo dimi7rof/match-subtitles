@@ -7,7 +7,7 @@ namespace SubRename;
 
 public static class SubtitleRenamerApp
 {
-    public static void RunWithOptions(string topFolder, bool deleteSubfolders, bool deleteUnrelated, bool confirmDeletes, Action<string> log)
+    public static void RunWithOptions(string topFolder, bool deleteSubfolders, bool deleteUnrelated, bool confirmDeletes, Action<string> log, Func<string, string, bool>? confirmDelete = null)
     {
         var videoExtensions = new[] { ".mkv", ".mp4", ".avi", ".mov" };
         var subtitleExtensions = new[] { ".srt", ".ass", ".vtt" };
@@ -147,11 +147,29 @@ public static class SubtitleRenamerApp
         if (subDirs.Length > 0 && deleteSubfolders)
         {
             bool doDeleteSubfolders = true;
-            if (confirmDeletes)
+            if (confirmDeletes && confirmDelete != null)
             {
-                // In UI, always delete if checked, skip prompt
+                foreach (var dir in subDirs)
+                {
+                    if (confirmDelete("folder", dir))
+                    {
+                        try
+                        {
+                            Directory.Delete(dir, recursive: true);
+                            Log($"Deleted folder: {dir}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Log($"Failed to delete folder {dir} — {ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Log($"Skipped deleting folder: {dir}");
+                    }
+                }
             }
-            if (doDeleteSubfolders)
+            else if (doDeleteSubfolders)
             {
                 foreach (var dir in subDirs)
                 {
@@ -188,27 +206,35 @@ public static class SubtitleRenamerApp
         var allowedFiles = finalVideoFiles.Union(finalSubtitleFiles);
         if (deleteUnrelated)
         {
+            var filesToDelete = Directory.GetFiles(topFolder)
+                .Where(f => !allowedFiles.Contains(f))
+                .ToList();
             bool doDeleteFiles = true;
-            if (confirmDeletes)
+            if (confirmDeletes && confirmDelete != null && filesToDelete.Count > 0)
             {
-                // In UI, always delete if checked, skip prompt
+                string fileList = string.Join("\n", filesToDelete.Select(Path.GetFileName));
+                doDeleteFiles = confirmDelete("files", $"{filesToDelete.Count} files:\n{fileList}");
             }
             if (doDeleteFiles)
             {
-                foreach (var file in Directory.GetFiles(topFolder))
+                foreach (var file in filesToDelete)
                 {
-                    if (!allowedFiles.Contains(file))
+                    try
                     {
-                        try
-                        {
-                            File.Delete(file);
-                            Log($"Deleted file: {file}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Log($"Failed to delete file: {file} — {ex.Message}");
-                        }
+                        File.Delete(file);
+                        Log($"Deleted file: {file}");
                     }
+                    catch (Exception ex)
+                    {
+                        Log($"Failed to delete file: {file} — {ex.Message}");
+                    }
+                }
+            }
+            else
+            {
+                foreach (var file in filesToDelete)
+                {
+                    Log($"Skipped deleting file: {file}");
                 }
             }
         }

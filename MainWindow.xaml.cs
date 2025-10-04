@@ -1,5 +1,11 @@
 ﻿using System.Windows;
 using WinForms = System.Windows.Forms;
+using System.Windows.Threading;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace SubRename;
 
@@ -47,10 +53,31 @@ public partial class MainWindow : Window
                 deleteSubfolders,
                 deleteUnrelated,
                 confirmDeletes,
-                msg => Dispatcher.Invoke(() => LogTextBox.Text += msg + "\n")
+                msg => Dispatcher.Invoke(() => LogTextBox.Text += msg + "\n"),
+                confirmDeletes ? ConfirmDelete : null
             );
         });
 
         StartButton.IsEnabled = true;
+    }
+
+    // Confirmation dialog for deletes
+    private bool ConfirmDelete(string itemType, string itemPath)
+    {
+        return Dispatcher.Invoke(() =>
+        {
+            if (itemType == "files")
+            {
+                var result = System.Windows.MessageBox.Show($"Are you sure you want to delete the following files?\n{itemPath}",
+                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                return result == MessageBoxResult.Yes;
+            }
+            else
+            {
+                var result = System.Windows.MessageBox.Show($"Are you sure you want to delete this {itemType}?\n{itemPath}",
+                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                return result == MessageBoxResult.Yes;
+            }
+        });
     }
 }
