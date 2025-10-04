@@ -1,3 +1,5 @@
+using SharpCompress.Archives;
+using SharpCompress.Common;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -16,6 +18,27 @@ public static class SubtitleRenamerApp
         {
             log?.Invoke(msg);
             File.AppendAllText(logFilePath, $"[{DateTime.Now}] {msg}{Environment.NewLine}");
+        }
+
+        // 0. Extract .zip and .rar files first
+        var archiveFiles = Directory.GetFiles(topFolder, "*.zip", SearchOption.TopDirectoryOnly)
+            .Concat(Directory.GetFiles(topFolder, "*.rar", SearchOption.TopDirectoryOnly))
+            .ToList();
+        foreach (var archivePath in archiveFiles)
+        {
+            try
+            {
+                using var archive = ArchiveFactory.Open(archivePath);
+                foreach (var entry in archive.Entries.Where(e => !e.IsDirectory))
+                {
+                    entry.WriteToDirectory(topFolder, new ExtractionOptions { ExtractFullPath = true, Overwrite = true });
+                }
+                Log($"Extracted archive: {archivePath}");
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to extract archive: {archivePath} — {ex.Message}");
+            }
         }
 
         // 1. Move video files from subfolders to top folder
