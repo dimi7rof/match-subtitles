@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Threading;
+using System.Windows.Controls;
 using WinForms = System.Windows.Forms;
 
 namespace SubRename;
@@ -43,7 +44,7 @@ public partial class MainWindow : Window
         LogTextBox.Clear();
 
         bool doCleanup = DeleteCleanupCheckBox.IsChecked == true;
-        bool confirmDeletes = ConfirmBeforeDeleteCheckBox.IsChecked == true;
+        bool confirmDeletes = true;
 
         // Run the logic in a background task to keep UI responsive
         await Task.Run(() =>
@@ -65,18 +66,66 @@ public partial class MainWindow : Window
     {
         return Dispatcher.Invoke(() =>
         {
-            if (itemType == "files")
+            var message = $"Are you sure you want to delete the following {itemPath}";
+
+            var scrollViewer = new System.Windows.Controls.ScrollViewer
             {
-                var result = System.Windows.MessageBox.Show($"Are you sure you want to delete the following files?\n{itemPath}",
-                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                return result == MessageBoxResult.Yes;
-            }
-            else
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Content = new System.Windows.Controls.TextBlock
+                {
+                    Text = message,
+                    TextWrapping = TextWrapping.Wrap,
+                    FontSize = 12,
+                    Margin = new Thickness(0, 0, 0, 18)
+                },
+                Height = 400
+            };
+
+            var yesButton = new System.Windows.Controls.Button
             {
-                var result = System.Windows.MessageBox.Show($"Are you sure you want to delete this {itemType}?\n{itemPath}",
-                    "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                return result == MessageBoxResult.Yes;
-            }
+                Content = "Yes",
+                Width = 100,
+                Margin = new Thickness(0, 0, 12, 0),
+                IsDefault = true
+            };
+            var noButton = new System.Windows.Controls.Button
+            {
+                Content = "No",
+                Width = 100,
+                IsCancel = true
+            };
+
+            var buttonPanel = new System.Windows.Controls.StackPanel
+            {
+                Orientation = System.Windows.Controls.Orientation.Horizontal,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Right
+            };
+            buttonPanel.Children.Add(yesButton);
+            buttonPanel.Children.Add(noButton);
+
+            var mainPanel = new System.Windows.Controls.StackPanel
+            {
+                Margin = new Thickness(24)
+            };
+            mainPanel.Children.Add(scrollViewer);
+            mainPanel.Children.Add(buttonPanel);
+
+            var dialog = new Window
+            {
+                Title = "Confirm Delete",
+                Width = 900,
+                Height = 520,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                ResizeMode = ResizeMode.CanMinimize,
+                Owner = this,
+                Content = mainPanel
+            };
+
+            bool result = false;
+            yesButton.Click += (_, __) => { result = true; dialog.Close(); };
+            noButton.Click += (_, __) => { result = false; dialog.Close(); };
+            dialog.ShowDialog();
+            return result;
         });
     }
 }

@@ -149,9 +149,15 @@ public static class SubtitleRenamerApp
             bool doDeleteSubfolders = true;
             if (confirmDeletes && confirmDelete != null)
             {
-                foreach (var dir in subDirs)
+                bool confirmed = true;
+                if (subDirs.Length > 0)
                 {
-                    if (confirmDelete("folder", dir))
+                    string folderList = string.Join("\n", subDirs.Select(Path.GetFileName));
+                    confirmed = confirmDelete("folders", $"{subDirs.Length} folders?\n{folderList}");
+                }
+                if (confirmed)
+                {
+                    foreach (var dir in subDirs)
                     {
                         try
                         {
@@ -162,10 +168,6 @@ public static class SubtitleRenamerApp
                         {
                             Log($"Failed to delete folder {dir} — {ex.Message}");
                         }
-                    }
-                    else
-                    {
-                        Log($"Skipped deleting folder: {dir}");
                     }
                 }
             }
@@ -213,7 +215,7 @@ public static class SubtitleRenamerApp
             if (confirmDeletes && confirmDelete != null && filesToDelete.Count > 0)
             {
                 string fileList = string.Join("\n", filesToDelete.Select(Path.GetFileName));
-                doDeleteFiles = confirmDelete("files", $"{filesToDelete.Count} files:\n{fileList}");
+                doDeleteFiles = confirmDelete("files", $"{filesToDelete.Count} files?\n{fileList}");
             }
             if (doDeleteFiles)
             {
@@ -228,13 +230,6 @@ public static class SubtitleRenamerApp
                     {
                         Log($"Failed to delete file: {file} — {ex.Message}");
                     }
-                }
-            }
-            else
-            {
-                foreach (var file in filesToDelete)
-                {
-                    Log($"Skipped deleting file: {file}");
                 }
             }
         }

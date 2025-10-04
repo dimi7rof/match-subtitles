@@ -25,11 +25,10 @@
         <!-- Options -->
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,8">
             <CheckBox x:Name="DeleteCleanupCheckBox" Content="Delete subfolders and unrelated files" IsChecked="True" Margin="0,0,16,0" FontSize="15"/>
-            <CheckBox x:Name="ConfirmBeforeDeleteCheckBox" Content="Confirm before deleting" IsChecked="True" FontSize="15"/>
         </StackPanel>
 
         <!-- Start button -->
-        <Button x:Name="StartButton" Content="Start" Grid.Row="2" Grid.Column="0" Width="120" Height="32" Click="StartButton_Click"/>
+        <Button x:Name="StartButton" Content="Match" Grid.Row="2" Grid.Column="0" Width="120" Height="32" Click="StartButton_Click"/>
 
         <!-- Log output -->
         <TextBox x:Name="LogTextBox" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" Height="240" VerticalScrollBarVisibility="Auto" AcceptsReturn="True" IsReadOnly="True" TextWrapping="Wrap"/>
