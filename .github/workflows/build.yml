@@ -11,10 +11,10 @@ on:
         required: true
         type: string
       project:
-        description: "Project to build (e.g. SubtitleRenamerWpf.csproj)"
+        description: "Project to build (e.g. SubRenameWpf.csproj)"
         required: false
         type: string
-        default: "SubtitleRenamerWpf.csproj"
+        default: "SubRenameWpf.csproj"
 
 jobs:
   build:
@@ -39,12 +39,12 @@ jobs:
         run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeAllContentForSelfExtract=true -p:PublishTrimmed=false -o publish
 
       - name: Archive published app
-        run: Compress-Archive -Path publish\* -DestinationPath SubtitleRenamerWpf.zip
+        run: Compress-Archive -Path publish\* -DestinationPath SubRenameWpf.zip
 
       - name: Copy EXE for release
         run: |
           $exe = Get-ChildItem -Path publish -Filter *.exe | Select-Object -First 1
-          if ($exe) { Copy-Item $exe.FullName -Destination SubtitleRenamerWpf.exe }
+          if ($exe) { Copy-Item $exe.FullName -Destination SubRenameWpf.exe }
 
       - name: Push tag (if workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
@@ -75,4 +75,4 @@ jobs:
           name: Release ${{ steps.set_tag.outputs.tag }}
           version: ${{ steps.set_tag.outputs.tag }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          files: "SubtitleRenamerWpf.zip,SubtitleRenamerWpf.exe"
+          files: "SubRenameWpf.zip,SubRenameWpf.exe"
