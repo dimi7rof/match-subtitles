@@ -1,11 +1,6 @@
 ﻿using System.Windows;
-using WinForms = System.Windows.Forms;
 using System.Windows.Threading;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Collections.Generic;
-using System.Linq;
-using System;
+using WinForms = System.Windows.Forms;
 
 namespace SubRename;
 
@@ -21,7 +16,7 @@ public partial class MainWindow : Window
 
     private void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
-        using var dialog = new WinForms.FolderBrowserDialog();
+        using var dialog = new FolderBrowserDialog();
         var result = dialog.ShowDialog();
         if (result == WinForms.DialogResult.OK)
         {
