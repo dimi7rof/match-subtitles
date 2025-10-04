@@ -24,12 +24,18 @@ public partial class MainWindow : Window
         }
     }
 
+    private void AppendLog(string message)
+    {
+        LogTextBox.Text += message + "\n";
+        LogTextBox.ScrollToEnd();
+    }
+
     private async void StartButton_Click(object sender, RoutedEventArgs e)
     {
         string folder = FolderPathTextBox.Text.Trim();
         if (string.IsNullOrWhiteSpace(folder) || !System.IO.Directory.Exists(folder))
         {
-            LogTextBox.Text += "Please select a valid folder.\n";
+            AppendLog("Please select a valid folder.");
             return;
         }
 
@@ -48,7 +54,7 @@ public partial class MainWindow : Window
                 deleteSubfolders,
                 deleteUnrelated,
                 confirmDeletes,
-                msg => Dispatcher.Invoke(() => LogTextBox.Text += msg + "\n"),
+                msg => Dispatcher.Invoke(() => AppendLog(msg)),
                 confirmDeletes ? ConfirmDelete : null
             );
         });
