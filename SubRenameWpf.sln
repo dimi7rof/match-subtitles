@@ -8,7 +8,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\verify.yml = .github\workflows\verify.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubRenameWpf.Tests", "tests\SubRenameWpf.Tests.csproj", "{9482CA91-51CA-6C19-26BA-D40288190E0F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +23,10 @@ Global
 		{28A30C19-7A7A-4779-8514-59FECA6209A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28A30C19-7A7A-4779-8514-59FECA6209A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28A30C19-7A7A-4779-8514-59FECA6209A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9482CA91-51CA-6C19-26BA-D40288190E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9482CA91-51CA-6C19-26BA-D40288190E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9482CA91-51CA-6C19-26BA-D40288190E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9482CA91-51CA-6C19-26BA-D40288190E0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

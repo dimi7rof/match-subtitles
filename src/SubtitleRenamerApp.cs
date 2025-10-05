@@ -20,7 +20,18 @@ public static class SubtitleRenamerApp
             File.AppendAllText(logFilePath, $"[{DateTime.Now}] {msg}{Environment.NewLine}");
         }
 
-        // 0. Extract .zip and .rar files first
+        ExtractArchives(topFolder, Log);
+        var movedVideoFiles = MoveVideos(topFolder, videoExtensions, logFilePath, Log);
+        var allSubtitleFiles = FindSubtitles(topFolder, subtitleExtensions);
+        MatchAndRenameSubtitles(movedVideoFiles, allSubtitleFiles, episodeRegex, topFolder, logFilePath, Log);
+        DeleteSubfolders(topFolder, cleanup, confirmDeletes, confirmDelete, Log);
+        DeleteUnrelatedFiles(topFolder, videoExtensions, subtitleExtensions, cleanup, confirmDeletes, confirmDelete, Log);
+
+        Log($"\n{topFolder} is ready to be watched!\n");
+    }
+
+    private static void ExtractArchives(string topFolder, Action<string> Log)
+    {
         var archiveFiles = Directory.GetFiles(topFolder, "*.zip", SearchOption.TopDirectoryOnly)
             .Concat(Directory.GetFiles(topFolder, "*.rar", SearchOption.TopDirectoryOnly))
             .ToList();
@@ -40,12 +51,13 @@ public static class SubtitleRenamerApp
                 Log($"Failed to extract archive: {archivePath} — {ex.Message}");
             }
         }
+    }
 
-        // 1. Move video files from subfolders to top folder
+    private static List<string> MoveVideos(string topFolder, string[] videoExtensions, string logFilePath, Action<string> Log)
+    {
         var allVideoFiles = Directory.GetFiles(topFolder, "*.*", SearchOption.AllDirectories)
             .Where(f => videoExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
             .ToList();
-
         var movedVideoFiles = new List<string>();
         foreach (var video in allVideoFiles)
         {
@@ -68,15 +80,20 @@ public static class SubtitleRenamerApp
                 movedVideoFiles.Add(destPath);
             }
         }
+        return movedVideoFiles;
+    }
 
-        // 2. Find all subtitle files (support multiple extensions)
-        var allSubtitleFiles = Directory.GetFiles(topFolder, "*.*", SearchOption.AllDirectories)
+    private static List<string> FindSubtitles(string topFolder, string[] subtitleExtensions)
+    {
+        return Directory.GetFiles(topFolder, "*.*", SearchOption.AllDirectories)
             .Where(f => subtitleExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
             .ToList();
+    }
 
+    private static void MatchAndRenameSubtitles(List<string> movedVideoFiles, List<string> allSubtitleFiles,
+        Regex episodeRegex, string topFolder, string logFilePath, Action<string> Log)
+    {
         var usedSubtitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        // 3. Match, check or rename subtitles
         foreach (var videoFile in movedVideoFiles)
         {
             var videoName = Path.GetFileNameWithoutExtension(videoFile);
@@ -102,15 +119,19 @@ public static class SubtitleRenamerApp
                 if (candidates.Count == 1) chosen = candidates[0];
                 else
                 {
-                    var exact = candidates.FirstOrDefault(c => Path.GetFileNameWithoutExtension(c).Equals(videoName, StringComparison.OrdinalIgnoreCase));
+                    var exact = candidates
+                        .FirstOrDefault(c => string.Equals(Path.GetFileNameWithoutExtension(c), videoName, StringComparison.OrdinalIgnoreCase));
                     if (exact != null) chosen = exact;
                     else
                     {
-                        var srtPref = candidates.FirstOrDefault(c => Path.GetExtension(c).Equals(".srt", StringComparison.OrdinalIgnoreCase));
+                        var srtPref = candidates
+                            .FirstOrDefault(c => Path.GetExtension(c).Equals(".srt", StringComparison.OrdinalIgnoreCase));
                         if (srtPref != null) chosen = srtPref;
                         else
                         {
-                            chosen = candidates.OrderBy(c => Helpers.LevenshteinDistance(Path.GetFileNameWithoutExtension(c), videoName)).First();
+                            chosen = candidates
+                                .OrderBy(c => Helpers.LevenshteinDistance(Path.GetFileNameWithoutExtension(c), videoName))
+                                .First();
                         }
                     }
                     Log($"Multiple subtitle candidates for {videoName}: {string.Join(", ", candidates)}. Chosen: {chosen}");
@@ -141,54 +162,46 @@ public static class SubtitleRenamerApp
                 }
             }
         }
+    }
 
-        // 4. Delete subfolders
+    private static void DeleteSubfolders(string topFolder, bool cleanup, bool confirmDeletes,
+        Func<string, string, bool>? confirmDelete, Action<string> Log)
+    {
         var subDirs = Directory.GetDirectories(topFolder);
-        if (subDirs.Length > 0 && cleanup)
+        if (subDirs.Length == 0 || !cleanup)
+            return;
+
+        if (confirmDeletes && confirmDelete != null)
         {
-            bool doDeleteSubfolders = true;
-            if (confirmDeletes && confirmDelete != null)
-            {
-                bool confirmed = true;
-                if (subDirs.Length > 0)
-                {
-                    string folderList = string.Join("\n", subDirs.Select(Path.GetFileName));
-                    confirmed = confirmDelete("folders", $"{subDirs.Length} folders?\n{folderList}");
-                }
-                if (confirmed)
-                {
-                    foreach (var dir in subDirs)
-                    {
-                        try
-                        {
-                            Directory.Delete(dir, recursive: true);
-                            Log($"Deleted folder: {dir}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Log($"Failed to delete folder {dir} — {ex.Message}");
-                        }
-                    }
-                }
-            }
-            else if (doDeleteSubfolders)
+            bool confirmed = true;
+            string folderList = string.Join("\n", subDirs.Select(Path.GetFileName));
+            confirmed = confirmDelete("folders", $"{subDirs.Length} folders?\n{folderList}");
+            if (!confirmed)
             {
                 foreach (var dir in subDirs)
-                {
-                    try
-                    {
-                        Directory.Delete(dir, recursive: true);
-                        Log($"Deleted folder: {dir}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Failed to delete folder {dir} — {ex.Message}");
-                    }
-                }
+                    Log($"Skipped deleting folder: {dir}");
+                return;
             }
         }
 
-        // 5. Delete unrelated files in the top folder
+        foreach (var dir in subDirs)
+        {
+            try
+            {
+                Directory.Delete(dir, recursive: true);
+                Log($"Deleted folder: {dir}");
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to delete folder {dir} — {ex.Message}");
+            }
+        }
+    }
+
+    private static void DeleteUnrelatedFiles(string topFolder, string[] videoExtensions,
+        string[] subtitleExtensions, bool cleanup, bool confirmDeletes,
+        Func<string, string, bool>? confirmDelete, Action<string> Log)
+    {
         var finalVideoFiles = Directory.GetFiles(topFolder)
             .Where(f => videoExtensions.Contains(Path.GetExtension(f), StringComparer.OrdinalIgnoreCase))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -206,34 +219,38 @@ public static class SubtitleRenamerApp
         }
 
         var allowedFiles = finalVideoFiles.Union(finalSubtitleFiles);
-        if (cleanup)
+        if (!cleanup)
+            return;
+
+        var filesToDelete = Directory.GetFiles(topFolder)
+            .Where(f => !allowedFiles.Contains(f))
+            .ToList();
+        if (filesToDelete.Count == 0)
+            return;
+
+        if (confirmDeletes && confirmDelete != null)
         {
-            var filesToDelete = Directory.GetFiles(topFolder)
-                .Where(f => !allowedFiles.Contains(f))
-                .ToList();
-            bool doDeleteFiles = true;
-            if (confirmDeletes && confirmDelete != null && filesToDelete.Count > 0)
-            {
-                string fileList = string.Join("\n", filesToDelete.Select(Path.GetFileName));
-                doDeleteFiles = confirmDelete("files", $"{filesToDelete.Count} files?\n{fileList}");
-            }
-            if (doDeleteFiles)
+            string fileList = string.Join("\n", filesToDelete.Select(Path.GetFileName));
+            bool doDeleteFiles = confirmDelete("files", $"{filesToDelete.Count} files?\n{fileList}");
+            if (!doDeleteFiles)
             {
                 foreach (var file in filesToDelete)
-                {
-                    try
-                    {
-                        File.Delete(file);
-                        Log($"Deleted file: {file}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log($"Failed to delete file: {file} — {ex.Message}");
-                    }
-                }
+                    Log($"Skipped deleting file: {file}");
+                return;
             }
         }
 
-        Log($"\n{topFolder} is ready to be watched!\n");
+        foreach (var file in filesToDelete)
+        {
+            try
+            {
+                File.Delete(file);
+                Log($"Deleted file: {file}");
+            }
+            catch (Exception ex)
+            {
+                Log($"Failed to delete file: {file} — {ex.Message}");
+            }
+        }
     }
 }
