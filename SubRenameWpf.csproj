@@ -10,14 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="SubRenameWpf.Tests\SubRenameWpf.Tests.csproj" />
-    <Compile Remove="SubRenameWpf.Tests\**" />
-    <Compile Remove="tests\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="SharpCompress" Version="0.40.0" />
-    <PackageReference Include="xunit.assert" Version="2.9.3" />
   </ItemGroup>
 
 </Project>
